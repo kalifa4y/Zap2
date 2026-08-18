@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Header } from './components/layout/Header';
 import { TabNav } from './components/layout/TabNav';
+import { Footer } from './components/layout/Footer';
 import { VideoUploader } from './components/dashboard/VideoUploader';
 import { ProcessingSettings } from './components/dashboard/ProcessingSettings';
 import { ProcessingProgress } from './components/dashboard/ProcessingProgress';
@@ -11,6 +12,8 @@ import { TimelineAdjuster } from './components/studio/TimelineAdjuster';
 import { ClipMetadataForm } from './components/studio/ClipMetadataForm';
 import { SocialAccounts } from './components/social/SocialAccounts';
 import { PublishModal } from './components/social/PublishModal';
+import { PrivacyPolicy } from './components/legal/PrivacyPolicy';
+import { TermsOfService } from './components/legal/TermsOfService';
 import { useStudioStore } from './stores/useStudioStore';
 import { api } from './services/api';
 import { Project, Clip } from './types';
@@ -24,6 +27,40 @@ export const App: React.FC = () => {
     selectedClipId,
     setSelectedClipId,
   } = useStudioStore();
+
+  const [legalView, setLegalView] = useState<'privacy' | 'terms' | null>(() => {
+    if (typeof window !== 'undefined') {
+      if (window.location.pathname === '/privacy') return 'privacy';
+      if (window.location.pathname === '/terms') return 'terms';
+    }
+    return null;
+  });
+
+  // Listen to browser URL changes
+  useEffect(() => {
+    const handlePopState = () => {
+      if (window.location.pathname === '/privacy') setLegalView('privacy');
+      else if (window.location.pathname === '/terms') setLegalView('terms');
+      else setLegalView(null);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const openPrivacy = () => {
+    setLegalView('privacy');
+    window.history.pushState({}, '', '/privacy');
+  };
+
+  const openTerms = () => {
+    setLegalView('terms');
+    window.history.pushState({}, '', '/terms');
+  };
+
+  const closeLegal = () => {
+    setLegalView(null);
+    window.history.pushState({}, '', '/');
+  };
 
   // Query project status with auto-polling when PROCESSING
   const { data: activeProject, refetch: refetchProject } = useQuery<Project>({
@@ -86,74 +123,89 @@ export const App: React.FC = () => {
     <div className="min-h-screen bg-[#0d0d11] text-zinc-100 flex flex-col font-sans selection:bg-[#bbf246] selection:text-[#0d0d11]">
       {/* Navigation Header */}
       <Header />
-      <TabNav />
 
-      {/* Main Container */}
-      <main className="flex-1 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        {/* TAB 1: INGESTION & PIPELINE DASHBOARD */}
-        {activeTab === 'upload' && (
-          <div className="space-y-8 max-w-4xl mx-auto">
-            <VideoUploader
-              onProjectLoaded={(proj) => {
-                if (proj) {
-                  setActiveProjectId(proj.id);
-                  refetchProject();
-                } else {
-                  setActiveProjectId(null);
-                }
-              }}
-              activeProject={activeProject || null}
-            />
+      {/* Main Content or Legal View */}
+      {legalView === 'privacy' ? (
+        <main className="flex-1">
+          <PrivacyPolicy onBack={closeLegal} />
+        </main>
+      ) : legalView === 'terms' ? (
+        <main className="flex-1">
+          <TermsOfService onBack={closeLegal} />
+        </main>
+      ) : (
+        <>
+          <TabNav />
+          <main className="flex-1 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+            {/* TAB 1: INGESTION & PIPELINE DASHBOARD */}
+            {activeTab === 'upload' && (
+              <div className="space-y-8 max-w-4xl mx-auto">
+                <VideoUploader
+                  onProjectLoaded={(proj) => {
+                    if (proj) {
+                      setActiveProjectId(proj.id);
+                      refetchProject();
+                    } else {
+                      setActiveProjectId(null);
+                    }
+                  }}
+                  activeProject={activeProject || null}
+                />
 
-            {activeProject && activeProject.status === 'PROCESSING' && (
-              <ProcessingProgress project={activeProject} />
-            )}
+                {activeProject && activeProject.status === 'PROCESSING' && (
+                  <ProcessingProgress project={activeProject} />
+                )}
 
-            {activeProject && activeProject.status === 'COMPLETED' && (
-              <ProcessingProgress project={activeProject} />
-            )}
+                {activeProject && activeProject.status === 'COMPLETED' && (
+                  <ProcessingProgress project={activeProject} />
+                )}
 
-            <ProcessingSettings />
-          </div>
-        )}
-
-        {/* TAB 2: STUDIO 9:16 & ÉDITION */}
-        {activeTab === 'studio' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-12rem)] min-h-[650px]">
-            {/* Column 1: Clip List */}
-            <div className="lg:col-span-3 h-full overflow-hidden">
-              <ClipList
-                clips={activeProject?.clips || []}
-                onDeleteClip={handleDeleteClip}
-              />
-            </div>
-
-            {/* Column 2: 9:16 Video Player & Timeline Adjuster */}
-            <div className="lg:col-span-5 flex flex-col justify-between space-y-4">
-              <div className="flex-1 flex items-center justify-center">
-                <VideoPlayer clip={selectedClip} />
+                <ProcessingSettings />
               </div>
-              <TimelineAdjuster clip={selectedClip} onClipUpdated={handleClipUpdated} />
-            </div>
+            )}
 
-            {/* Column 3: SEO Metadata & Publishing Form */}
-            <div className="lg:col-span-4 h-full">
-              <ClipMetadataForm
-                clip={selectedClip}
-                onClipUpdated={handleClipUpdated}
-                onDeleteClip={handleDeleteClip}
-              />
-            </div>
-          </div>
-        )}
+            {/* TAB 2: STUDIO 9:16 & ÉDITION */}
+            {activeTab === 'studio' && (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-12rem)] min-h-[650px]">
+                {/* Column 1: Clip List */}
+                <div className="lg:col-span-3 h-full overflow-hidden">
+                  <ClipList
+                    clips={activeProject?.clips || []}
+                    onDeleteClip={handleDeleteClip}
+                  />
+                </div>
 
-        {/* TAB 3: MULTI-POSTING SOCIAL ACCOUNTS */}
-        {activeTab === 'accounts' && (
-          <div className="max-w-5xl mx-auto">
-            <SocialAccounts accounts={socialAccounts} onRefresh={refetchAccounts} />
-          </div>
-        )}
-      </main>
+                {/* Column 2: 9:16 Video Player & Timeline Adjuster */}
+                <div className="lg:col-span-5 flex flex-col justify-between space-y-4">
+                  <div className="flex-1 flex items-center justify-center">
+                    <VideoPlayer clip={selectedClip} />
+                  </div>
+                  <TimelineAdjuster clip={selectedClip} onClipUpdated={handleClipUpdated} />
+                </div>
+
+                {/* Column 3: SEO Metadata & Publishing Form */}
+                <div className="lg:col-span-4 h-full">
+                  <ClipMetadataForm
+                    clip={selectedClip}
+                    onClipUpdated={handleClipUpdated}
+                    onDeleteClip={handleDeleteClip}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* TAB 3: MULTI-POSTING SOCIAL ACCOUNTS */}
+            {activeTab === 'accounts' && (
+              <div className="max-w-5xl mx-auto">
+                <SocialAccounts accounts={socialAccounts} onRefresh={refetchAccounts} />
+              </div>
+            )}
+          </main>
+        </>
+      )}
+
+      {/* Global Footer with Legal Links */}
+      <Footer onOpenPrivacy={openPrivacy} onOpenTerms={openTerms} />
 
       {/* Global Publish Modal */}
       <PublishModal />

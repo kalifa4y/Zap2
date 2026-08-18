@@ -3,11 +3,12 @@ from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    APP_NAME: str = "SnapCut"
+    APP_NAME: str = "ZAP2"
     DEBUG: bool = True
-    HOST: str = "127.0.0.1"
+    HOST: str = "0.0.0.0"
     PORT: int = 8000
-    ALLOWED_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,http://localhost:5175,http://127.0.0.1:5175,http://localhost:3000,http://127.0.0.1:3000"
+    PUBLIC_URL: str = "http://localhost:8000"
+    ALLOWED_ORIGINS: str = "*"
 
     # Base Dir
     BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent
@@ -19,7 +20,7 @@ class Settings(BaseSettings):
     TEMP_DIR: str = "storage/temp"
 
     # Database
-    DATABASE_URL: str = "sqlite:///./snapcut.db"
+    DATABASE_URL: str = "sqlite:///./zap2.db"
 
     # Multiprocessing / Hardware
     DEFAULT_WHISPER_MODEL: str = "base"
