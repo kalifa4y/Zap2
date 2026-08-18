@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, PlainTextResponse
 from app.core.config import settings
 from app.core.database import init_db
 from app.api.v1.router import api_router
@@ -47,6 +47,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# TikTok Developer Verification File Route
+@app.get("/tiktokMC3rjSTv0WXJSWtQamUgBpW35hMLGHh8.txt", response_class=PlainTextResponse)
+def tiktok_verification():
+    return "tiktok-developers-site-verification=MC3rjSTv0WXJSWtQamUgBpW35hMLGHh8"
 
 # Storage static files
 storage_full_path = os.path.join(settings.BASE_DIR, settings.STORAGE_DIR)
