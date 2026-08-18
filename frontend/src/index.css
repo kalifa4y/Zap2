@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: "Google Sans Flex", "Outfit", "Roboto Flex", system-ui, -apple-system, sans-serif;
+    @apply bg-[#0d0d11] text-[#f4f4f5] antialiased selection:bg-[#bbf246] selection:text-[#0d0d11];
+    background-image: 
+      radial-gradient(circle at 15% 15%, rgba(187, 242, 70, 0.08) 0%, transparent 45%),
+      radial-gradient(circle at 85% 20%, rgba(200, 245, 92, 0.06) 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(26, 26, 34, 0.40) 0%, transparent 60%),
+      radial-gradient(circle at 50% 95%, rgba(187, 242, 70, 0.05) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Darker Grotesque", sans-serif;
+    @apply tracking-tight;
+  }
+
+  /* Custom scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0d0d11;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #252530;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #bbf246;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    background: rgba(20, 20, 26, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(187, 242, 70, 0.15);
+  }
+
+  .glass-card {
+    background: rgba(27, 27, 36, 0.80);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(43, 43, 56, 0.8);
+  }
+
+  .glow-lime {
+    box-shadow: 0 0 35px -5px rgba(187, 242, 70, 0.35);
+  }
+
+  .glow-lime-sm {
+    box-shadow: 0 0 20px -3px rgba(187, 242, 70, 0.25);
+  }
+
+  .glow-lime-lg {
+    box-shadow: 0 0 50px -4px rgba(187, 242, 70, 0.45);
+  }
+}
+
+/* Pulse Wave Animation */
+@keyframes audio-wave {
+  0%, 100% {
+    height: 6px;
+  }
+  50% {
+    height: 32px;
+  }
+}
+
+.animate-wave-1 {
+  animation: audio-wave 1s ease-in-out infinite;
+}
+.animate-wave-2 {
+  animation: audio-wave 1.2s ease-in-out infinite 0.15s;
+}
+.animate-wave-3 {
+  animation: audio-wave 0.9s ease-in-out infinite 0.3s;
+}
+.animate-wave-4 {
+  animation: audio-wave 1.1s ease-in-out infinite 0.45s;
+}
+.animate-wave-5 {
+  animation: audio-wave 0.8s ease-in-out infinite 0.2s;
+}
