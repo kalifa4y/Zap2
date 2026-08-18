@@ -1,7 +1,21 @@
 import axios from 'axios';
 import { Project, Clip, ProcessVideoOptions, SocialAccount, PublishJob } from '../types';
 
-const API_BASE_URL = 'http://localhost:8000/api/v1';
+const getApiBaseUrl = () => {
+  const metaEnv = (import.meta as any)?.env;
+  if (metaEnv?.VITE_API_BASE_URL) {
+    return metaEnv.VITE_API_BASE_URL;
+  }
+  if (typeof window !== 'undefined') {
+    // When running in production (e.g., Render, Docker, or any port other than Vite dev 5173)
+    if (window.location.port !== '5173') {
+      return `${window.location.origin}/api/v1`;
+    }
+  }
+  return 'http://localhost:8000/api/v1';
+};
+
+export const API_BASE_URL = getApiBaseUrl();
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -89,7 +103,7 @@ export const api = {
   },
 
   async getOAuthAuthorizeUrl(platform: string): Promise<{ authorization_url: string; platform: string }> {
-    const response = await apiClient.get(`/auth/${platform}/authorize`);
+    const response = await apiClient.get<{ authorization_url: string; platform: string }>(`/auth/${platform}/authorize`);
     return response.data;
   },
 

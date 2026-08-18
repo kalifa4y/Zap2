@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Youtube, Instagram, Share2, CheckCircle2, Unlink, ExternalLink } from 'lucide-react';
+import { Youtube, Instagram, Share2, CheckCircle2, Unlink, ExternalLink, AlertCircle } from 'lucide-react';
 import { SocialAccount } from '../../types';
 import { api } from '../../services/api';
 
@@ -11,6 +11,7 @@ interface Props {
 
 export const AccountCard: React.FC<Props> = ({ platform, account, onRefresh }) => {
   const [isConnecting, setIsConnecting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const platformMeta = {
     youtube: {
@@ -45,13 +46,18 @@ export const AccountCard: React.FC<Props> = ({ platform, account, onRefresh }) =
 
   const handleConnect = async () => {
     setIsConnecting(true);
+    setErrorMsg(null);
     try {
       const res = await api.getOAuthAuthorizeUrl(platform);
       if (res.authorization_url) {
         window.location.href = res.authorization_url;
+      } else {
+        setErrorMsg("URL d'autorisation non reçue du serveur.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(`Connect ${platform} error:`, err);
+      const detail = err.response?.data?.detail || err.message || 'Erreur réseau ou configuration manquante.';
+      setErrorMsg(typeof detail === 'string' ? detail : JSON.stringify(detail));
     } finally {
       setIsConnecting(false);
     }
@@ -117,6 +123,14 @@ export const AccountCard: React.FC<Props> = ({ platform, account, onRefresh }) =
         ) : (
           <div className="rounded-2xl bg-[#1b1b24]/60 p-3.5 border border-dashed border-[#2b2b38] text-xs text-zinc-400 text-center font-sans">
             Aucun compte associé. Associez votre compte pour diffuser ou planifier vos Shorts automatiquement.
+          </div>
+        )}
+
+        {/* Error message alert */}
+        {errorMsg && (
+          <div className="flex items-center gap-2 rounded-xl bg-rose-500/10 border border-rose-500/30 p-3 text-xs text-rose-300">
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            <span>{errorMsg}</span>
           </div>
         )}
       </div>
