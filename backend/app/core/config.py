@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     HOST: str = "0.0.0.0"
     PORT: int = 8000
-    PUBLIC_URL: str = "http://localhost:8000"
+    PUBLIC_URL: str = "https://zap2.onrender.com"
     ALLOWED_ORIGINS: str = "*"
 
     # Base Dir
@@ -30,17 +30,17 @@ class Settings(BaseSettings):
     # OAuth2 YouTube
     GOOGLE_CLIENT_ID: str = ""
     GOOGLE_CLIENT_SECRET: str = ""
-    GOOGLE_REDIRECT_URI: str = "http://localhost:8000/api/v1/auth/youtube/callback"
+    GOOGLE_REDIRECT_URI: str = "https://zap2.onrender.com/api/v1/auth/youtube/callback"
 
     # OAuth2 TikTok
     TIKTOK_CLIENT_KEY: str = ""
     TIKTOK_CLIENT_SECRET: str = ""
-    TIKTOK_REDIRECT_URI: str = "http://localhost:8000/api/v1/auth/tiktok/callback"
+    TIKTOK_REDIRECT_URI: str = "https://zap2.onrender.com/api/v1/auth/tiktok/callback"
 
     # OAuth2 Instagram
     INSTAGRAM_APP_ID: str = ""
     INSTAGRAM_APP_SECRET: str = ""
-    INSTAGRAM_REDIRECT_URI: str = "http://localhost:8000/api/v1/auth/instagram/callback"
+    INSTAGRAM_REDIRECT_URI: str = "https://zap2.onrender.com/api/v1/auth/instagram/callback"
 
     model_config = SettingsConfigDict(env_file=".env", extra="allow")
 

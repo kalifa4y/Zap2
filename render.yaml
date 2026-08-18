@@ -14,6 +14,8 @@ services:
         value: 8000
       - key: ALLOWED_ORIGINS
         value: "*"
+      - key: PUBLIC_URL
+        value: https://zap2.onrender.com
       - key: WHISPER_MODEL
         value: base
       - key: GOOGLE_CLIENT_ID

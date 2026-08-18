@@ -1,5 +1,5 @@
 import logging
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from app.core.config import settings
@@ -9,6 +9,18 @@ from app.services.social_publisher import social_publisher
 
 logger = logging.getLogger("zap2.api.auth")
 router = APIRouter()
+
+def get_base_url(request: Request) -> str:
+    """Helper to detect public host URL reliably in production / proxy / local."""
+    forwarded_host = request.headers.get("x-forwarded-host")
+    host = forwarded_host or request.headers.get("host")
+    forwarded_proto = request.headers.get("x-forwarded-proto")
+    
+    if host:
+        proto = forwarded_proto or ("https" if "onrender.com" in host or not host.startswith("localhost") else request.url.scheme)
+        return f"{proto}://{host}".rstrip('/')
+    
+    return settings.PUBLIC_URL.rstrip('/')
 
 @router.get("/{platform}/authorize")
 def authorize_platform(platform: str):
@@ -22,11 +34,18 @@ def authorize_platform(platform: str):
 @router.get("/{platform}/callback")
 async def oauth_callback(
     platform: str,
-    code: str,
+    request: Request,
+    code: str = None,
     state: str = None,
     db: Session = Depends(get_db)
 ):
     """OAuth2 callback handler: exchanges authorization code for tokens and saves to DB."""
+    base_url = get_base_url(request)
+    
+    if not code:
+        logger.warning(f"OAuth callback called without code for {platform}")
+        return RedirectResponse(url=f"{base_url}/?tab=accounts&auth_error=Code+manquant")
+
     try:
         token_info = await social_publisher.exchange_code_for_token(platform, code)
 
@@ -58,10 +77,8 @@ async def oauth_callback(
 
         db.commit()
         # Redirect back to frontend social tab
-        base_url = settings.PUBLIC_URL.rstrip('/')
         return RedirectResponse(url=f"{base_url}/?tab=accounts&auth_success=true")
 
     except Exception as e:
         logger.error(f"OAuth callback failed for {platform}: {e}", exc_info=True)
-        base_url = settings.PUBLIC_URL.rstrip('/')
         return RedirectResponse(url=f"{base_url}/?tab=accounts&auth_error={str(e)}")
