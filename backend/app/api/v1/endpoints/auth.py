@@ -2,11 +2,12 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
+from app.core.config import settings
 from app.core.database import get_db
 from app.models.social import SocialAccount
 from app.services.social_publisher import social_publisher
 
-logger = logging.getLogger("snapcut.api.auth")
+logger = logging.getLogger("zap2.api.auth")
 router = APIRouter()
 
 @router.get("/{platform}/authorize")
@@ -57,8 +58,10 @@ async def oauth_callback(
 
         db.commit()
         # Redirect back to frontend social tab
-        return RedirectResponse(url="http://localhost:5173/?tab=accounts&auth_success=true")
+        base_url = settings.PUBLIC_URL.rstrip('/')
+        return RedirectResponse(url=f"{base_url}/?tab=accounts&auth_success=true")
 
     except Exception as e:
         logger.error(f"OAuth callback failed for {platform}: {e}", exc_info=True)
-        return RedirectResponse(url=f"http://localhost:5173/?tab=accounts&auth_error={str(e)}")
+        base_url = settings.PUBLIC_URL.rstrip('/')
+        return RedirectResponse(url=f"{base_url}/?tab=accounts&auth_error={str(e)}")
