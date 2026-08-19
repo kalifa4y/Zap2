@@ -10,9 +10,6 @@ async def test_authorization_urls():
     tt_url = pub.get_authorization_url("tiktok")
     assert "tiktok" in tt_url
 
-    ig_url = pub.get_authorization_url("instagram")
-    assert "instagram" in ig_url or "facebook" in ig_url
-
 @pytest.mark.asyncio
 async def test_mock_code_exchange():
     pub = SocialPublisher()

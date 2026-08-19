@@ -60,7 +60,7 @@ export interface TikTokLiveSession {
 
 export interface SocialAccount {
   id: string;
-  platform: 'youtube' | 'tiktok' | 'instagram';
+  platform: 'youtube' | 'tiktok';
   account_id: string;
   account_name: string;
   avatar_url?: string;

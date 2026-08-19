@@ -71,7 +71,7 @@ export const ScheduleCalendar: React.FC = () => {
               Calendrier & File d'Attente Automatisée
             </h3>
             <p className="text-xs text-zinc-400 font-sans">
-              Diffusion autonome sur YouTube Shorts, TikTok & Instagram Reels
+              Diffusion autonome sur YouTube Shorts et TikTok
             </p>
           </div>
         </div>

@@ -49,7 +49,7 @@
 * 🎨 **Kinetic Subtitles & Animated Hooks:** Burns dynamic word-by-word karaoke captions and bounce-animated hook titles directly into video frames.
 * 📥 **Universal URL Downloader (`yt-dlp`):** Instantly downloads full stream recordings from YouTube, Twitch, TikTok, or direct MP4 links.
 * 🔴 **TikTok Live Studio Auto-Sync:** Monitors stream end times and automatically schedules replay downloads 3 hours post-broadcast.
-* 🚀 **Autonomous Multi-Platform Publishing:** Direct OAuth2 posting and frequency-based scheduling (every 1h, 2h, 5h, 1x/day, 3x/day) to **YouTube Shorts**, **TikTok**, and **Instagram Reels**.
+* 🚀 **Autonomous Multi-Platform Publishing:** Direct OAuth2 posting and frequency-based scheduling (every 1h, 2h, 5h, 1x/day, 3x/day) to **YouTube Shorts** and **TikTok**.
 * ⚡ **Ultra-Fast Local Processing:** Powered by `faster-whisper` (CTranslate2) with GPU acceleration and automatic CPU `int8` fallback.
 
 ---
@@ -80,7 +80,6 @@ flowchart TD
     subgraph SOCIAL["4. Autonomous Social Multi-Publisher"]
         J --> K[YouTube Shorts Data API v3]
         J --> L[TikTok Content Posting API]
-        J --> N[Meta Instagram Graph API Reels]
         J --> O[Background Scheduler: 1h / 2h / 5h / Daily]
     end
 ```
@@ -180,7 +179,6 @@ ZAP2 integrates official OAuth2 authentication and automated publishing pipeline
 
 * **YouTube Shorts:** Publishes via `YouTube Data API v3` with auto `#Shorts` category tags.
 * **TikTok:** Publishes via `TikTok Content Posting API` with direct upload tokens.
-* **Instagram Reels:** Publishes via `Meta Instagram Graph API` (`/media` + `/media_publish` container flow).
 * **Autonomous Scheduling Bot:** Set publishing intervals (**Every 1h, 2h, 5h, Once a day, 3x a day**) to automatically distribute your content queue over time.
 
 ---
@@ -192,14 +190,12 @@ Configure your credentials in `backend/.env`:
 | Variable | Default Value | Description |
 | :--- | :--- | :--- |
 | `API_V1_STR` | `/api/v1` | API Route Prefix |
-| `DATABASE_URL` | `sqlite:///./snapcut.db` | SQLAlchemy Database Connection URL |
+| `DATABASE_URL` | `sqlite:///./zap2.db` | SQLAlchemy Database Connection URL |
 | `WHISPER_MODEL` | `base` | Model size (`tiny`, `base`, `small`, `medium`, `large-v3`) |
 | `GOOGLE_CLIENT_ID` | *optional* | Google Cloud OAuth2 Client ID for YouTube |
 | `GOOGLE_CLIENT_SECRET` | *optional* | Google Cloud OAuth2 Client Secret |
 | `TIKTOK_CLIENT_KEY` | *optional* | TikTok for Developers Client Key |
 | `TIKTOK_CLIENT_SECRET`| *optional* | TikTok for Developers Client Secret |
-| `INSTAGRAM_CLIENT_ID` | *optional* | Meta Developers App ID for Instagram |
-| `INSTAGRAM_CLIENT_SECRET`| *optional* | Meta Developers App Secret |
 
 > 💡 *Note: If API credentials are not provided, ZAP2 seamlessly operates in local simulation mode for instant prototyping.*
 
@@ -222,7 +218,7 @@ Zap2/
 │   │   │   ├── video_downloader.py # yt-dlp URL video downloader
 │   │   │   ├── video_processor.py  # FFmpeg silencedetect, 9:16 crop & burn-in
 │   │   │   ├── speech_analyzer.py  # faster-whisper transcription & keywords
-│   │   │   └── social_publisher.py # YouTube, TikTok & Instagram Reels
+│   │   │   └── social_publisher.py # YouTube Shorts & TikTok
 │   │   └── main.py                # FastAPI Application Entrypoint
 │   ├── tests/                     # 16+ Unit and Integration Pytest tests
 │   └── requirements.txt           # Python backend dependencies

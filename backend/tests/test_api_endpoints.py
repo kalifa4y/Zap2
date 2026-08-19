@@ -20,7 +20,7 @@ def test_list_projects_empty_or_valid():
     assert isinstance(response.json(), list)
 
 def test_auth_authorize_urls():
-    for platform in ["youtube", "tiktok", "instagram"]:
+    for platform in ["youtube", "tiktok"]:
         response = client.get(f"/api/v1/auth/{platform}/authorize")
         assert response.status_code == 200
         data = response.json()

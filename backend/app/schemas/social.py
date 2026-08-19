@@ -24,13 +24,13 @@ class SocialAccountRead(SocialAccountBase):
 
 class PublishClipRequest(BaseModel):
     clip_id: str
-    platforms: List[str] # ["youtube", "tiktok", "instagram"]
+    platforms: List[str] # ["youtube", "tiktok"]
     custom_title: Optional[str] = None
     custom_description: Optional[str] = None
 
 class SchedulePostRequest(BaseModel):
     clip_id: str
-    platforms: List[str] # ["youtube", "tiktok", "instagram"]
+    platforms: List[str] # ["youtube", "tiktok"]
     scheduled_at: Optional[datetime] = None
     frequency_interval: Optional[str] = "2h" # "1h", "2h", "5h", "1_day", "3_day", "custom"
     custom_title: Optional[str] = None

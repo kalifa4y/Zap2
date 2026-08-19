@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Share2, Youtube, Instagram, CheckCircle2, AlertCircle, Loader2, ExternalLink, Calendar, Clock } from 'lucide-react';
+import { X, Share2, Youtube, CheckCircle2, AlertCircle, Loader2, ExternalLink, Calendar, Clock } from 'lucide-react';
 import { useStudioStore } from '../../stores/useStudioStore';
 import { api } from '../../services/api';
 import { PublishJob } from '../../types';
@@ -10,7 +10,7 @@ export const PublishModal: React.FC = () => {
   const [publishMode, setPublishMode] = useState<'instant' | 'schedule'>('instant');
   const [frequencyInterval, setFrequencyInterval] = useState<'1h' | '2h' | '5h' | '1_day' | '3_day' | 'custom'>('2h');
   const [scheduledAt, setScheduledAt] = useState('');
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['youtube', 'tiktok', 'instagram']);
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['youtube', 'tiktok']);
   const [customTitle, setCustomTitle] = useState('');
   const [customDescription, setCustomDescription] = useState('');
   const [isPublishing, setIsPublishing] = useState(false);
@@ -244,7 +244,7 @@ export const PublishModal: React.FC = () => {
         {/* Platform Selection Checkboxes */}
         <div className="space-y-2">
           <label className="text-xs font-semibold text-zinc-300 font-sans">Sélectionnez les plateformes cibles :</label>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             {/* YouTube */}
             <button
               type="button"
@@ -271,20 +271,6 @@ export const PublishModal: React.FC = () => {
             >
               <Share2 className="h-5 w-5" />
               <span className="text-[11px] font-bold font-heading">TikTok</span>
-            </button>
-
-            {/* Instagram */}
-            <button
-              type="button"
-              onClick={() => togglePlatform('instagram')}
-              className={`flex flex-col items-center justify-center gap-2 p-3 rounded-2xl border transition-all ${
-                selectedPlatforms.includes('instagram')
-                  ? 'border-pink-500/80 bg-pink-500/15 text-pink-400 shadow-md'
-                  : 'border-[#2b2b38] bg-[#1b1b24]/60 text-zinc-400 hover:border-[#bbf246]/40'
-              }`}
-            >
-              <Instagram className="h-5 w-5" />
-              <span className="text-[11px] font-bold font-heading">Instagram</span>
             </button>
           </div>
         </div>

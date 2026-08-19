@@ -37,11 +37,6 @@ class Settings(BaseSettings):
     TIKTOK_CLIENT_SECRET: str = ""
     TIKTOK_REDIRECT_URI: str = "https://zap2.onrender.com/api/v1/auth/tiktok/callback"
 
-    # OAuth2 Instagram
-    INSTAGRAM_APP_ID: str = ""
-    INSTAGRAM_APP_SECRET: str = ""
-    INSTAGRAM_REDIRECT_URI: str = "https://zap2.onrender.com/api/v1/auth/instagram/callback"
-
     model_config = SettingsConfigDict(env_file=".env", extra="allow")
 
 settings = Settings()

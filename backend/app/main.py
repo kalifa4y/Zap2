@@ -29,7 +29,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="ZAP2 API",
-    description="Studio IA de découpage intelligent 9:16 & Multi-Posting TikTok, YouTube & Instagram",
+    description="Studio IA de découpage intelligent 9:16 & Multi-Posting TikTok et YouTube Shorts",
     version="2.0.0",
     lifespan=lifespan
 )

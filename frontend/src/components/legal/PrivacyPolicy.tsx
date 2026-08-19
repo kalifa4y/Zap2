@@ -36,14 +36,14 @@ export const PrivacyPolicy: React.FC<Props> = ({ onBack }) => {
               1. Introduction & Engagement
             </h2>
             <p>
-              L'application <strong>ZAP2</strong> (accessible sur https://zap2.app ou votre domaine de déploiement) respecte la vie privée de ses utilisateurs et s'engage à protéger l'ensemble des données personnelles collectées lors de l'utilisation de nos services de découpe vidéo intelligente et de multi-diffusion sur les réseaux sociaux (TikTok, YouTube Shorts, Instagram Reels).
+              L'application <strong>ZAP2</strong> (accessible sur https://zap2.onrender.com) respecte la vie privée de ses utilisateurs et s'engage à protéger l'ensemble des données personnelles collectées lors de l'utilisation de nos services de découpe vidéo intelligente et de multi-diffusion sur les réseaux sociaux (TikTok et YouTube Shorts).
             </p>
           </section>
 
           <section className="space-y-2">
             <h2 className="text-lg font-bold text-white font-heading flex items-center gap-2">
               <Lock className="h-4 w-4 text-[#bbf246]" />
-              2. Données collectées via TikTok, YouTube et Instagram
+              2. Données collectées via TikTok et YouTube
             </h2>
             <p>Lorsque vous connectez vos comptes sociaux à ZAP2 via le protocole OAuth2 officiel :</p>
             <ul className="list-disc list-inside space-y-1 pl-2 text-zinc-400">

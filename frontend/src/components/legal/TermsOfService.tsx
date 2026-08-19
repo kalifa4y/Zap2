@@ -36,7 +36,7 @@ export const TermsOfService: React.FC<Props> = ({ onBack }) => {
               1. Objet du Service
             </h2>
             <p>
-              Le service <strong>ZAP2</strong> propose aux créateurs de contenu, streamers et entreprises une plateforme d'automatisation permettant d'analyser, découper des vidéos au format 9:16 (Shorts/Reels) et de programmer leur diffusion sur les plateformes tierces partenaires (TikTok, YouTube, Meta/Instagram).
+              Le service <strong>ZAP2</strong> propose aux créateurs de contenu, streamers et entreprises une plateforme d'automatisation permettant d'analyser, découper des vidéos au format 9:16 (Shorts) et de programmer leur diffusion sur les plateformes tierces partenaires (TikTok et YouTube Shorts).
             </p>
           </section>
 
@@ -46,12 +46,11 @@ export const TermsOfService: React.FC<Props> = ({ onBack }) => {
               2. Respect des Conditions des Plateformes Tierces
             </h2>
             <p>
-              En utilisant ZAP2 pour publier ou programmer du contenu sur TikTok, YouTube ou Instagram, l'utilisateur s'engage expressément à respecter les règles de communauté et conditions d'utilisation respectives :
+              En utilisant ZAP2 pour publier ou programmer du contenu sur TikTok ou YouTube, l'utilisateur s'engage expressément à respecter les règles de communauté et conditions d'utilisation respectives :
             </p>
             <ul className="list-disc list-inside space-y-1 pl-2 text-zinc-400">
               <li>Conditions d'Utilisation et Règles Communautaires de <strong>TikTok</strong>.</li>
               <li>Conditions d'Utilisation de <strong>YouTube</strong> et Règlement de la communauté Google.</li>
-              <li>Conditions d'Utilisation de <strong>Meta / Instagram</strong>.</li>
             </ul>
           </section>
 

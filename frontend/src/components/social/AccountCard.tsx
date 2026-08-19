@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Youtube, Instagram, Share2, CheckCircle2, Unlink, ExternalLink, AlertCircle } from 'lucide-react';
+import { Youtube, Share2, CheckCircle2, Unlink, ExternalLink, AlertCircle } from 'lucide-react';
 import { SocialAccount } from '../../types';
 import { api } from '../../services/api';
 
 interface Props {
-  platform: 'youtube' | 'tiktok' | 'instagram';
+  platform: 'youtube' | 'tiktok';
   account?: SocialAccount;
   onRefresh: () => void;
 }
@@ -29,14 +29,6 @@ export const AccountCard: React.FC<Props> = ({ platform, account, onRefresh }) =
       textColor: 'text-[#bbf246]',
       badgeBg: 'bg-[#bbf246]/10 border-[#bbf246]/20 text-[#bbf246]',
       desc: 'Posting direct via TikTok Content Posting API'
-    },
-    instagram: {
-      name: 'Instagram Reels',
-      icon: Instagram,
-      color: 'bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white',
-      textColor: 'text-pink-400',
-      badgeBg: 'bg-pink-500/10 border-pink-500/20 text-pink-400',
-      desc: 'Diffusion Reels via Instagram Graph API'
     }
   };
 

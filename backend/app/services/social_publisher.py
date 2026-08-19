@@ -7,7 +7,7 @@ from typing import Dict, Any, Optional
 import httpx
 from app.core.config import settings
 
-logger = logging.getLogger("snapcut.social_publisher")
+logger = logging.getLogger("zap2.social_publisher")
 
 class SocialPublisher:
     # -------------------------------------------------------------
@@ -18,7 +18,7 @@ class SocialPublisher:
         if platform == "youtube":
             if not settings.GOOGLE_CLIENT_ID:
                 # Local dev mock authorization flow
-                return f"http://localhost:{settings.PORT}/api/v1/auth/youtube/callback?code=mock_google_code_123&state=dev"
+                return f"{settings.PUBLIC_URL}/api/v1/auth/youtube/callback?code=mock_google_code_123&state=dev"
             
             params = {
                 "client_id": settings.GOOGLE_CLIENT_ID,
@@ -32,28 +32,16 @@ class SocialPublisher:
 
         elif platform == "tiktok":
             if not settings.TIKTOK_CLIENT_KEY:
-                return f"http://localhost:{settings.PORT}/api/v1/auth/tiktok/callback?code=mock_tiktok_code_123&state=dev"
+                return f"{settings.PUBLIC_URL}/api/v1/auth/tiktok/callback?code=mock_tiktok_code_123&state=dev"
             
             params = {
                 "client_key": settings.TIKTOK_CLIENT_KEY,
                 "redirect_uri": settings.TIKTOK_REDIRECT_URI,
                 "response_type": "code",
                 "scope": "user.info.basic,video.upload,video.publish",
-                "state": "snapcut_state"
+                "state": "zap2_state"
             }
             return f"https://www.tiktok.com/v2/auth/authorize/?{urllib.parse.urlencode(params)}"
-
-        elif platform == "instagram":
-            if not settings.INSTAGRAM_APP_ID:
-                return f"http://localhost:{settings.PORT}/api/v1/auth/instagram/callback?code=mock_instagram_code_123&state=dev"
-            
-            params = {
-                "client_id": settings.INSTAGRAM_APP_ID,
-                "redirect_uri": settings.INSTAGRAM_REDIRECT_URI,
-                "response_type": "code",
-                "scope": "instagram_basic,instagram_content_publish,pages_show_list",
-            }
-            return f"https://www.facebook.com/v19.0/dialog/oauth?{urllib.parse.urlencode(params)}"
         
         raise ValueError(f"Plateforme non supportée : {platform}")
 
@@ -65,7 +53,7 @@ class SocialPublisher:
         now = datetime.now(timezone.utc)
 
         # Mock / Dev fallback
-        if code.startswith("mock_") or not (settings.GOOGLE_CLIENT_ID or settings.TIKTOK_CLIENT_KEY or settings.INSTAGRAM_APP_ID):
+        if code.startswith("mock_") or not (settings.GOOGLE_CLIENT_ID or settings.TIKTOK_CLIENT_KEY):
             logger.info(f"Simulating OAuth2 code exchange for {platform}")
             return {
                 "account_id": f"{platform}_user_99",
@@ -98,14 +86,21 @@ class SocialPublisher:
                 )
                 ch_json = ch_res.json()
                 items = ch_json.get("items", [])
-                channel_title = items[0]["snippet"]["title"] if items else "YouTube Channel"
-                channel_id = items[0]["id"] if items else "yt_channel"
-                avatar_url = items[0]["snippet"]["thumbnails"]["default"]["url"] if items else None
+                
+                channel_name = "Chaîne YouTube"
+                channel_id = "youtube_channel"
+                avatar_url = None
+                
+                if items:
+                    snippet = items[0].get("snippet", {})
+                    channel_name = snippet.get("title", "Chaîne YouTube")
+                    channel_id = items[0].get("id", "youtube_channel")
+                    avatar_url = snippet.get("thumbnails", {}).get("default", {}).get("url")
 
                 expires_in = token_data.get("expires_in", 3600)
                 return {
                     "account_id": channel_id,
-                    "account_name": channel_title,
+                    "account_name": channel_name,
                     "avatar_url": avatar_url,
                     "access_token": token_data["access_token"],
                     "refresh_token": token_data.get("refresh_token"),
@@ -134,27 +129,8 @@ class SocialPublisher:
                     "refresh_token": token_data.get("refresh_token"),
                     "token_expires_at": now + timedelta(seconds=expires_in),
                 }
-
-            elif platform == "instagram":
-                token_url = "https://graph.facebook.com/v19.0/oauth/access_token"
-                params = {
-                    "client_id": settings.INSTAGRAM_APP_ID,
-                    "client_secret": settings.INSTAGRAM_APP_SECRET,
-                    "redirect_uri": settings.INSTAGRAM_REDIRECT_URI,
-                    "code": code,
-                }
-                res = await client.get(token_url, params=params)
-                res.raise_for_status()
-                token_data = res.json()
-                expires_in = token_data.get("expires_in", 5184000)
-                return {
-                    "account_id": "ig_business_account",
-                    "account_name": "Instagram Business",
-                    "avatar_url": None,
-                    "access_token": token_data.get("access_token", ""),
-                    "refresh_token": None,
-                    "token_expires_at": now + timedelta(seconds=expires_in),
-                }
+            
+            raise ValueError(f"Plateforme non supportée : {platform}")
 
     # -------------------------------------------------------------
     # 3. Video Upload & Publishing Methods
@@ -179,8 +155,7 @@ class SocialPublisher:
             mock_id = f"{platform}_vid_{datetime.now().strftime('%M%S')}"
             urls = {
                 "youtube": f"https://youtube.com/shorts/{mock_id}",
-                "tiktok": f"https://tiktok.com/@creator/video/{mock_id}",
-                "instagram": f"https://instagram.com/reel/{mock_id}"
+                "tiktok": f"https://tiktok.com/@creator/video/{mock_id}"
             }
             return {
                 "status": "PUBLISHED",
@@ -274,43 +249,7 @@ class SocialPublisher:
                         "error": None
                     }
 
-                elif platform == "instagram":
-                    # Instagram Graph API Reels container flow
-                    ig_user_id = account_id if account_id and not account_id.startswith("mock_") else "me"
-                    
-                    # 1. Create Media Container
-                    init_url = f"https://graph.facebook.com/v19.0/{ig_user_id}/media"
-                    params = {
-                        "media_type": "REELS",
-                        "caption": f"{full_title}\n\n{full_description}",
-                        "access_token": access_token
-                    }
-                    
-                    # Note: Instagram Graph API requires public video URL or direct byte upload
-                    res = await client.post(init_url, params=params)
-                    if res.status_code == 200:
-                        container_id = res.json().get("id")
-                        # 2. Publish Container
-                        pub_url = f"https://graph.facebook.com/v19.0/{ig_user_id}/media_publish"
-                        pub_res = await client.post(pub_url, params={"creation_id": container_id, "access_token": access_token})
-                        pub_res.raise_for_status()
-                        ig_post_id = pub_res.json().get("id")
-                        return {
-                            "status": "PUBLISHED",
-                            "external_video_id": ig_post_id or container_id,
-                            "external_url": f"https://instagram.com/reel/{ig_post_id or container_id}",
-                            "error": None
-                        }
-                    else:
-                        # If running without public hosting callback, fallback with logged warning
-                        logger.warning(f"Instagram Graph direct upload response: {res.text}")
-                        mock_id = f"ig_{datetime.now().strftime('%M%S')}"
-                        return {
-                            "status": "PUBLISHED",
-                            "external_video_id": mock_id,
-                            "external_url": f"https://instagram.com/reel/{mock_id}",
-                            "error": None
-                        }
+                raise ValueError(f"Plateforme non supportée : {platform}")
 
             except Exception as e:
                 logger.error(f"Upload to {platform} failed: {e}")
