@@ -6,13 +6,8 @@ const getApiBaseUrl = () => {
   if (metaEnv?.VITE_API_BASE_URL) {
     return metaEnv.VITE_API_BASE_URL;
   }
-  if (typeof window !== 'undefined') {
-    // When running in production (e.g., Render, Docker, or any port other than Vite dev 5173)
-    if (window.location.port !== '5173') {
-      return `${window.location.origin}/api/v1`;
-    }
-  }
-  return 'http://localhost:8000/api/v1';
+  // Relative URL works out of the box both in production on Render and locally through Vite proxy
+  return '/api/v1';
 };
 
 export const API_BASE_URL = getApiBaseUrl();
@@ -81,15 +76,15 @@ export const api = {
   },
 
   getClipStreamUrl(clipId: string): string {
-    return `${API_BASE_URL}/cut/clips/${clipId}/stream`;
+    return `/api/v1/cut/clips/${clipId}/stream`;
   },
 
   getClipDownloadUrl(clipId: string): string {
-    return `${API_BASE_URL}/cut/clips/${clipId}/download`;
+    return `/api/v1/cut/clips/${clipId}/download`;
   },
 
   getRawVideoStreamUrl(projectId: string): string {
-    return `${API_BASE_URL}/videos/stream/${projectId}`;
+    return `/api/v1/videos/stream/${projectId}`;
   },
 
   // Social & Auth Endpoints
